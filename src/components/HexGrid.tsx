@@ -13,6 +13,8 @@ interface HexGridProps {
   onCellClick?: (row: number, col: number) => void;
 }
 
+const EMPTY_COORD = { row: -1, col: -1 };
+
 const HexGrid: React.FC<HexGridProps> = ({ 
   colors, 
   onCellClick, 
@@ -27,34 +29,45 @@ const HexGrid: React.FC<HexGridProps> = ({
 
   const [isDrawing, setIsDrawing] = React.useState(false);
 
-  const findHexUnderMouse = (event: React.MouseEvent<SVGPolygonElement>): {row: number, col: number} => {
-    const polygon = event.currentTarget;
+  const findHexUnderMouse = (event: React.MouseEvent<SVGPolygonElement>): {row: number, col: number} | null => {
+    const { clientX, clientY } = event;
+    const element = document.elementFromPoint(clientX, clientY);
   
+    if (element === null || !(element instanceof SVGPolygonElement)) {
+      return null;
+    }
+
     // You can extract data attributes or other information from the element
     // For example, if you add data attributes for row and column:
-    const row = Number(polygon.getAttribute('data-row'));
-    const col = Number(polygon.getAttribute('data-col'));
+    const row = Number(element.getAttribute('data-row'));
+    const col = Number(element.getAttribute('data-col'));
     return { row, col };
   }
 
   const handlePointerDown = (event: React.PointerEvent<SVGPolygonElement>) => {
-    setIsDrawing(true);
-    const { row, col } = findHexUnderMouse(event);
-    onCellClick?.(row, col);
+    const hex = findHexUnderMouse(event);
+    if (hex !== null) {
+      setIsDrawing(true);
+      const { row, col } = hex;
+      onCellClick?.(row, col);
+    }
+   
   }
   const handlePointerUp = (event: React.PointerEvent<SVGPolygonElement>) => {
     setIsDrawing(false);
   }
   const handlePointerMove = (event: React.PointerEvent<SVGPolygonElement>) => {
-    const { row, col } = findHexUnderMouse(event);
-    if (isDrawing) {
-      onCellClick?.(row, col);
+    const hex = findHexUnderMouse(event);
+    if (hex !== null) {
+      const { row, col } = hex;
+      if (isDrawing) {
+        onCellClick?.(row, col);
+      }
     }
   }
   const handlePointerLeave = (event: React.PointerEvent<SVGPolygonElement>) => {
-    const { clientX, clientY } = event;
-    const element = document.elementFromPoint(clientX, clientY);
-    if (element === null || !(element instanceof SVGPolygonElement)) {
+    const hex = findHexUnderMouse(event);
+    if (hex === null) {
       setIsDrawing(false);
     }
   }
@@ -62,7 +75,7 @@ const HexGrid: React.FC<HexGridProps> = ({
 
   
   return (
-    <div className="hex-grid-container" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+    <div className="hex-grid-container" style={{ width: '100%', height: '100%' }}>
       <svg 
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         width="100%"
