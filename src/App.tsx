@@ -95,6 +95,7 @@ function App() {
     // Create a queue for BFS flood fill
     const queue: [number, number][] = [[startRow, startCol]];
     
+    let iterations = 0;
     // Process cells in the queue
     while (queue.length > 0) {
       const [row, col] = queue.shift()!;
@@ -119,21 +120,19 @@ function App() {
       const isEvenRow = row % 2 === 0;
       
       if (isEvenRow) {
-        // For even rows
-        queue.push([row-1, col]);   // top-left
-        queue.push([row-1, col+1]); // top-right
-        queue.push([row, col-1]);   // left
-        queue.push([row, col+1]);   // right
-        queue.push([row+1, col]);   // bottom-left
-        queue.push([row+1, col+1]); // bottom-right
+        queue.push([row-2, col]);
+        queue.push([row+2, col]);
+        queue.push([row-1, col-1]);
+        queue.push([row-1, col]);
+        queue.push([row+1, col-1]);
+        queue.push([row+1, col]);
       } else {
-        // For odd rows
-        queue.push([row-1, col-1]); // top-left
-        queue.push([row-1, col]);   // top-right
-        queue.push([row, col-1]);   // left
-        queue.push([row, col+1]);   // right
-        queue.push([row+1, col-1]); // bottom-left
-        queue.push([row+1, col]);   // bottom-right
+        queue.push([row-2, col]);
+        queue.push([row+2, col]);
+        queue.push([row-1, col+1]);
+        queue.push([row-1, col]);
+        queue.push([row+1, col+1]);
+        queue.push([row+1, col]);
       }
     }
     
