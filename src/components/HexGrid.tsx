@@ -79,7 +79,7 @@ const HexGrid: React.FC<HexGridProps> = ({
         width="100%"
         height="100%"
         className="hex-grid-svg"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMinYMin meet"
       >
         <g
           className="hex-grid"
