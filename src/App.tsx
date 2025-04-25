@@ -215,13 +215,11 @@ function App() {
           onCellClick={handleCellClick}
         />
         
-        <div className="color-palette-container">
-          <ColorPalette 
-            colors={COLORS} 
-            selectedColor={selectedColor} 
-            onColorSelect={setSelectedColor}
-          />
-        </div>
+        <ColorPalette 
+          colors={COLORS} 
+          selectedColor={selectedColor} 
+          onColorSelect={setSelectedColor}
+        />
       </main>
     </div>
   );
