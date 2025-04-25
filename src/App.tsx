@@ -94,8 +94,7 @@ function App() {
     
     // Create a queue for BFS flood fill
     const queue: [number, number][] = [[startRow, startCol]];
-    
-    let iterations = 0;
+
     // Process cells in the queue
     while (queue.length > 0) {
       const [row, col] = queue.shift()!;

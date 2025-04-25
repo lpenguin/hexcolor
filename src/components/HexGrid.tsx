@@ -13,8 +13,6 @@ interface HexGridProps {
   onCellClick?: (row: number, col: number) => void;
 }
 
-const EMPTY_COORD = { row: -1, col: -1 };
-
 const HexGrid: React.FC<HexGridProps> = ({ 
   colors, 
   onCellClick, 
@@ -53,7 +51,7 @@ const HexGrid: React.FC<HexGridProps> = ({
     }
    
   }
-  const handlePointerUp = (event: React.PointerEvent<SVGPolygonElement>) => {
+  const handlePointerUp = () => {
     setIsDrawing(false);
   }
   const handlePointerMove = (event: React.PointerEvent<SVGPolygonElement>) => {
