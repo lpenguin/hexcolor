@@ -31,7 +31,7 @@ html {
 
 .app-container {
   width: 100%;
-  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height instead of vh */
   margin: 0;
   padding: 0;
   display: flex;
@@ -58,6 +58,15 @@ main {
   padding: 0.5rem;
   border-radius: 0;
   height: 100%;
+  /* Ensure the tools container properly distributes space */
+  justify-content: space-between;
+}
+
+/* Group for the top buttons */
+.tool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .tool-button {

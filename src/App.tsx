@@ -188,24 +188,23 @@ function App() {
     <div className="app-container">
       <main>
         <div className="tools">
-          <button 
-            onClick={handlePaintClick} 
-            className={`tool-button ${currentMode === DrawMode.PAINT ? 'selected' : ''}`}
-            style={{ order: 1 }}
-          >
-            <img src="./icons/paint-icon.svg" alt="Paint Tool" />
-          </button>
-          <button 
-            onClick={handleFillClick} 
-            className={`tool-button ${currentMode === DrawMode.FILL ? 'selected' : ''}`}
-            style={{ order: 2 }}
-          >
-            <img src="./icons/fill-icon.svg" alt="Fill Tool" />
-          </button>
+          <div className="tool-group">
+            <button 
+              onClick={handlePaintClick} 
+              className={`tool-button ${currentMode === DrawMode.PAINT ? 'selected' : ''}`}
+            >
+              <img src="./icons/paint-icon.svg" alt="Paint Tool" />
+            </button>
+            <button 
+              onClick={handleFillClick} 
+              className={`tool-button ${currentMode === DrawMode.FILL ? 'selected' : ''}`}
+            >
+              <img src="./icons/fill-icon.svg" alt="Fill Tool" />
+            </button>
+          </div>
           <button 
             onClick={handleClearGrid} 
             className="tool-button clear"
-            style={{ order: 3, marginTop: 'auto' }}
           >
             <img src="./icons/clear-icon.svg" alt="Clear Grid" />
           </button>
