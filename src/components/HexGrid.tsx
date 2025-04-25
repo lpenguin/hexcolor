@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import './HexGrid.css';
 
 interface HexCellProps {
@@ -8,6 +8,7 @@ interface HexCellProps {
   onCellClick: (row: number, col: number) => void;
   onCellHover: (row: number, col: number) => void;
   isDrawing: boolean;
+  registerCellRef: (row: number, col: number, element: HTMLDivElement) => void;
 }
 
 const HexCell: React.FC<HexCellProps> = ({ 
@@ -16,8 +17,18 @@ const HexCell: React.FC<HexCellProps> = ({
   color, 
   onCellClick, 
   onCellHover,
-  isDrawing
+  isDrawing,
+  registerCellRef
 }) => {
+  const cellRef = useRef<HTMLDivElement>(null);
+  
+  // Register this cell's ref with the parent grid for touch tracking
+  useEffect(() => {
+    if (cellRef.current) {
+      registerCellRef(row, col, cellRef.current);
+    }
+  }, [row, col, registerCellRef]);
+  
   // Handle all mouse interactions in one place
   const handleMouseDown = () => {
     onCellClick(row, col);
@@ -31,7 +42,10 @@ const HexCell: React.FC<HexCellProps> = ({
 
   return (
     <div 
+      ref={cellRef}
       className="hex-cell-container" 
+      data-row={row}
+      data-col={col}
       onMouseDown={handleMouseDown}
       onMouseEnter={handleMouseEnter}
     >
@@ -62,7 +76,42 @@ const HexGrid: React.FC<HexGridProps> = ({
   onMouseUp
 }) => {
   // State to track if drawing is active
-  const [isDrawing, setIsDrawing] = React.useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  // Ref to track last touch position to avoid duplicate updates
+  const lastTouchRef = useRef<{row: number, col: number} | null>(null);
+  // Ref to store cell elements for touch tracking
+  const cellRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  // Ref to the grid element
+  const gridRef = useRef<HTMLDivElement>(null);
+  
+  // Register cell refs for touch detection
+  const registerCellRef = useCallback((row: number, col: number, element: HTMLDivElement) => {
+    cellRefs.current.set(`${row}-${col}`, element);
+  }, []);
+  
+  // Find the cell element at a given position
+  const findCellAtPosition = useCallback((x: number, y: number) => {
+    const element = document.elementFromPoint(x, y) as HTMLElement;
+    if (!element) return null;
+    
+    // Look for the closest element with data-row and data-col attributes
+    let current = element;
+    while (current && (!current.dataset.row || !current.dataset.col)) {
+      if (current.parentElement) {
+        current = current.parentElement;
+      } else {
+        break;
+      }
+    }
+    
+    if (current && current.dataset.row && current.dataset.col) {
+      const row = parseInt(current.dataset.row, 10);
+      const col = parseInt(current.dataset.col, 10);
+      return { row, col, element: current };
+    }
+    
+    return null;
+  }, []);
   
   // Handle grid-level mouse events
   const handleMouseDownGrid = () => {
@@ -92,14 +141,59 @@ const HexGrid: React.FC<HexGridProps> = ({
       onMouseDown();
     }
   };
+  
+  // Handle touch events at grid level
+  const handleTouchStartGrid = (e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent scrolling/zooming
+    const touch = e.touches[0];
+    const cell = findCellAtPosition(touch.clientX, touch.clientY);
+    
+    if (cell) {
+      // Start drawing and apply color to the first cell
+      setIsDrawing(true);
+      onMouseDown();
+      onCellClick(cell.row, cell.col);
+      lastTouchRef.current = { row: cell.row, col: cell.col };
+    }
+  };
+  
+  const handleTouchEndGrid = (e: React.TouchEvent) => {
+    e.preventDefault();
+    setIsDrawing(false);
+    onMouseUp();
+    lastTouchRef.current = null;
+  };
+  
+  const handleTouchMoveGrid = (e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent scrolling/zooming
+    if (!isDrawing) return;
+    
+    const touch = e.touches[0];
+    const cell = findCellAtPosition(touch.clientX, touch.clientY);
+    
+    if (cell) {
+      const { row, col } = cell;
+      // Only update if we've moved to a new cell
+      if (!lastTouchRef.current || 
+          lastTouchRef.current.row !== row || 
+          lastTouchRef.current.col !== col) {
+        onCellHover(row, col);
+        lastTouchRef.current = { row, col };
+      }
+    }
+  };
 
   return (
     <div 
+      ref={gridRef}
       className="hex-grid"
       onMouseDown={handleMouseDownGrid}
       onMouseUp={handleMouseUpGrid}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnterGrid}
+      onTouchStart={handleTouchStartGrid}
+      onTouchEnd={handleTouchEndGrid}
+      onTouchMove={handleTouchMoveGrid}
     >
       {/* Define shared resources once */}
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
@@ -141,6 +235,7 @@ const HexGrid: React.FC<HexGridProps> = ({
               onCellClick={onCellClick}
               onCellHover={onCellHover}
               isDrawing={isDrawing}
+              registerCellRef={registerCellRef}
             />
           ))}
         </div>

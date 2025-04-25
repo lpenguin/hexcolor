@@ -21,6 +21,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   border: 2px solid transparent;
+  touch-action: manipulation; /* Improves touch response */
+  -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
 }
 
 .color-option:hover {
@@ -30,4 +32,46 @@
 .color-option.selected {
   border: 2px solid #000;
   box-shadow: 0 0 0 2px white inset;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .color-palette {
+    padding: 0.75rem;
+  }
+  
+  .color-options {
+    gap: 0.4rem;
+  }
+  
+  .color-option {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+  
+  /* Disable hover effect on touch devices */
+  .color-option:hover {
+    transform: none;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .color-palette {
+    padding: 0.5rem;
+  }
+  
+  .color-options {
+    gap: 0.3rem;
+  }
+  
+  .color-option {
+    width: 1.8rem;
+    height: 1.8rem;
+    border-width: 1px;
+  }
+  
+  .color-option.selected {
+    border-width: 2px;
+  }
 }

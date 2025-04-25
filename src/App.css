@@ -9,6 +9,7 @@ body {
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9f9f9;
   color: #333;
+  touch-action: manipulation; /* Improves touch response */
 }
 
 .app-container {
@@ -109,6 +110,8 @@ main {
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
+  touch-action: manipulation; /* Improves touch response */
+  -webkit-tap-highlight-color: rgba(0,0,0,0); /* Removes tap highlight on mobile */
 }
 
 .tool-button:hover {
@@ -135,4 +138,66 @@ main {
 
 .read-the-docs {
   color: #888;
+}
+
+/* Responsive styling for mobile devices */
+@media (max-width: 768px) {
+  .app-container, #root {
+    padding: 1rem;
+  }
+  
+  .app-header h1 {
+    font-size: 2rem;
+  }
+  
+  .app-header p {
+    font-size: 0.9rem;
+  }
+  
+  .tools {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tool-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    width: calc(50% - 0.5rem); /* Two buttons per row with gap */
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .app-container, #root {
+    padding: 0.75rem;
+  }
+  
+  .app-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .tool-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available; /* For iOS Safari */
+  }
+  
+  html {
+    height: -webkit-fill-available; /* For iOS Safari */
+  }
+}
+
+/* Add support for notched phones */
+@supports (padding: max(0px)) {
+  .app-container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }

@@ -12,6 +12,13 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
   selectedColor, 
   onColorSelect 
 }) => {
+  // Handle touch events to prevent default behaviors
+  const handleTouchStart = (e: React.TouchEvent, color: string) => {
+    // Prevent double-tap zoom and other default behaviors
+    e.preventDefault();
+    onColorSelect(color);
+  };
+
   return (
     <div className="color-palette">
       <h3>Color Palette</h3>
@@ -22,6 +29,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
             className={`color-option ${selectedColor === color ? 'selected' : ''}`}
             style={{ backgroundColor: color }}
             onClick={() => onColorSelect(color)}
+            onTouchStart={(e) => handleTouchStart(e, color)}
             title={color}
           />
         ))}

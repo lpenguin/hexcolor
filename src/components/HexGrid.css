@@ -4,6 +4,9 @@
   align-items: center;
   margin: 2rem auto;
   padding: 1rem;
+  touch-action: manipulation; /* Improves touch response */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .hex-row {
@@ -23,6 +26,8 @@
   width: 3.5rem;  /* Increased from 3rem */
   height: 4.04rem; /* Increased proportionally (width * √3)/2 * 2 for regular hexagon */
   cursor: pointer;
+  touch-action: none; /* Disables browser handling of all panning and zooming gestures */
+  -webkit-tap-highlight-color: transparent; /* Removes the highlight overlay when tapping */
 }
 
 .hex-cell {
@@ -34,4 +39,41 @@
 .hex-cell:hover {
   transform: scale(1.1);
   z-index: 2; /* Increased z-index to ensure it's above other cells */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .hex-cell-container {
+    width: 2.8rem; /* Smaller cell size on mobile */
+    height: 3.23rem; /* Proportionally smaller */
+  }
+  
+  .hex-row-even {
+    margin-left: 2.8rem; /* Adjusted for smaller cells */
+  }
+  
+  .hex-row {
+    margin-top: -0.68rem; /* Adjusted for smaller cells */
+  }
+  
+  /* Disable hover effect on touch devices */
+  .hex-cell:hover {
+    transform: none;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .hex-cell-container {
+    width: 2.2rem; /* Even smaller for very small screens */
+    height: 2.54rem;
+  }
+  
+  .hex-row-even {
+    margin-left: 2.2rem;
+  }
+  
+  .hex-row {
+    margin-top: -0.53rem;
+  }
 }
