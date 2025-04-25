@@ -7,6 +7,9 @@
   width: 5rem;
   height: 100%;
   overflow: hidden;
+  touch-action: none;
+  -ms-touch-action: none;
+  -ms-content-zooming: none;
 }
 
 .color-options {
@@ -27,6 +30,9 @@
   -ms-user-select: none; /* Prevent text selection on IE */
   overflow-x: hidden; /* Prevent horizontal scrolling */
   scroll-behavior: smooth; /* Smooth scrolling for non-drag scrolling */
+  touch-action: pan-y; /* Only allow vertical scrolling */
+  -ms-touch-action: pan-y;
+  -webkit-touch-callout: none;
 }
 
 .color-options:active {
