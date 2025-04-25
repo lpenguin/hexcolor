@@ -28,7 +28,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
   };
   
   // Handle drag end
-  const handleMouseUp = (e: React.MouseEvent) => {
+  const handleMouseUp = () => {
     setIsDragging(false);
     if (colorOptionsRef.current) {
       colorOptionsRef.current.style.cursor = 'grab';
@@ -36,7 +36,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
   };
   
   // Handle mouse leave
-  const handleMouseLeave = (e: React.MouseEvent) => {
+  const handleMouseLeave = () => {
     if (isDragging) {
       setIsDragging(false);
       if (colorOptionsRef.current) {
@@ -64,7 +64,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
       // Small delay to determine if it's a tap or scroll
       const touchStartTime = new Date().getTime();
       
-      const handleTouchEnd = (endEvent: TouchEvent) => {
+      const handleTouchEnd = () => {
         const touchEndTime = new Date().getTime();
         // If touch duration was short, consider it a tap
         if (touchEndTime - touchStartTime < 150) {
