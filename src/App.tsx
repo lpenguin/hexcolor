@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import HexGrid from './components/HexGrid';
 import ColorPalette from './components/ColorPalette';
-import { generateVoronoiPattern } from './utils/patternUtils';
+import { generateVoronoiPattern, generateShapesPattern } from './utils/patternUtils';
 import './App.css';
 
 // Define drawing modes
 enum DrawMode {
-  PAINT,  // Regular painting
-  FILL,   // Flood fill
-  VORONOI // Voronoi pattern
+  PAINT,   // Regular painting
+  FILL,    // Flood fill
+  VORONOI, // Voronoi pattern
+  SHAPES   // Geometric shapes
 }
 
 function App() {
@@ -153,13 +154,16 @@ function App() {
 
   // Function to handle voronoi pattern generation
   const handleVoronoiClick = () => {
-    // First switch to VORONOI mode
-    setCurrentMode(DrawMode.VORONOI);
-    
-    // Generate the Voronoi pattern
-    // Using 12 regions to create a more detailed and colorful pattern
+    // Generate the Voronoi pattern without changing the current drawing mode
     const voronoiGrid = generateVoronoiPattern(GRID_SIZE_Y, GRID_SIZE_X, COLORS, 12);
     setGrid(voronoiGrid);
+  };
+
+  // Function to handle shapes pattern generation
+  const handleShapesClick = () => {
+    // Generate the Shapes pattern without changing the current drawing mode
+    const shapesGrid = generateShapesPattern(GRID_SIZE_Y, GRID_SIZE_X, COLORS, 8);
+    setGrid(shapesGrid);
   };
   
   // Function to handle clear grid
@@ -216,9 +220,15 @@ function App() {
             </button>
             <button 
               onClick={handleVoronoiClick} 
-              className={`tool-button ${currentMode === DrawMode.VORONOI ? 'selected' : ''}`}
+              className="tool-button"
             >
               <img src="./icons/voronoi-icon.svg" alt="Voronoi Pattern" />
+            </button>
+            <button 
+              onClick={handleShapesClick} 
+              className="tool-button"
+            >
+              <img src="./icons/shapes-icon.svg" alt="Shapes Pattern" />
             </button>
           </div>
           <button 

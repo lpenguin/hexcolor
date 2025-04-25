@@ -83,3 +83,180 @@ function calculateHexDistance(row1: number, col1: number, row2: number, col2: nu
   // Manhattan distance in cube coordinates
   return (Math.abs(q1 - q2) + Math.abs(r1 - r2) + Math.abs(s1 - s2)) / 2;
 }
+
+/**
+ * Generates a pattern with geometric shapes on the hex grid
+ * @param gridSizeY Number of rows in the grid
+ * @param gridSizeX Number of columns in the grid
+ * @param colors Array of colors to use for the shapes
+ * @param numShapes Number of shapes to generate (defaults to 6)
+ * @returns 2D array of colors representing the shapes pattern
+ */
+export const generateShapesPattern = (
+  gridSizeY: number, 
+  gridSizeX: number, 
+  colors: string[],
+  numShapes: number = 6
+): string[][] => {
+  // Create a new grid with default background color
+  const grid: string[][] = [];
+  for (let i = 0; i < gridSizeY; i++) {
+    grid.push(Array(gridSizeX).fill(colors[colors.length - 3])); // Use light gray as background
+  }
+  
+  // Generate different shapes
+  for (let s = 0; s < numShapes; s++) {
+    // Select a random shape type (0: circle, 1: hexagon, 2: triangle)
+    const shapeType = Math.floor(Math.random() * 3);
+    
+    // Get a random color from the colors array, excluding the last 4 (white, grays, black)
+    const colorIndex = Math.floor(Math.random() * (colors.length - 4));
+    const shapeColor = colors[colorIndex];
+    
+    // Generate random center point for the shape
+    const centerRow = Math.floor(Math.random() * gridSizeY);
+    const centerCol = Math.floor(Math.random() * gridSizeX);
+    
+    // Random size for the shape (radius)
+    const size = Math.floor(Math.random() * 4) + 2;  // 2 to 5 cells radius
+    
+    switch (shapeType) {
+      case 0: // Circle
+        drawCircle(grid, centerRow, centerCol, size, shapeColor);
+        break;
+      case 1: // Hexagon
+        drawHexagon(grid, centerRow, centerCol, size, shapeColor);
+        break;
+      case 2: // Triangle
+        drawTriangle(grid, centerRow, centerCol, size, shapeColor);
+        break;
+    }
+  }
+  
+  return grid;
+};
+
+/**
+ * Draws a circular shape on the grid
+ */
+function drawCircle(
+  grid: string[][], 
+  centerRow: number, 
+  centerCol: number, 
+  radius: number, 
+  color: string
+): void {
+  const gridSizeY = grid.length;
+  const gridSizeX = grid[0].length;
+  
+  // Check each cell in the grid
+  for (let row = 0; row < gridSizeY; row++) {
+    for (let col = 0; col < gridSizeX; col++) {
+      // Calculate hex distance from center
+      const distance = calculateHexDistance(row, col, centerRow, centerCol);
+      
+      // If distance is less than or equal to radius, color the cell
+      if (distance <= radius) {
+        grid[row][col] = color;
+      }
+    }
+  }
+}
+
+/**
+ * Draws a hexagonal shape on the grid
+ */
+function drawHexagon(
+  grid: string[][], 
+  centerRow: number, 
+  centerCol: number, 
+  size: number, 
+  color: string
+): void {
+  const gridSizeY = grid.length;
+  const gridSizeX = grid[0].length;
+  
+  // Check each cell in the grid
+  for (let row = 0; row < gridSizeY; row++) {
+    for (let col = 0; col < gridSizeX; col++) {
+      // Calculate cube coordinates
+      const q1 = col - Math.floor(row / 2);
+      const r1 = row;
+      const s1 = -q1 - r1;
+      
+      const q2 = centerCol - Math.floor(centerRow / 2);
+      const r2 = centerRow;
+      const s2 = -q2 - r2;
+      
+      // For a regular hexagon, all coordinates must be within the size
+      if (Math.max(
+        Math.abs(q1 - q2),
+        Math.abs(r1 - r2),
+        Math.abs(s1 - s2)
+      ) < size) {
+        grid[row][col] = color;
+      }
+    }
+  }
+}
+
+/**
+ * Draws a triangular shape on the grid
+ */
+function drawTriangle(
+  grid: string[][], 
+  centerRow: number, 
+  centerCol: number, 
+  size: number, 
+  color: string
+): void {
+  const gridSizeY = grid.length;
+  const gridSizeX = grid[0].length;
+  
+  // Define triangle vertices in cube coordinates
+  // Base center
+  const q0 = centerCol - Math.floor(centerRow / 2);
+  const r0 = centerRow;
+  const s0 = -q0 - r0;
+  
+  // Randomly select orientation (0-5)
+  const orientation = Math.floor(Math.random() * 6);
+  
+  // Check each cell in the grid
+  for (let row = 0; row < gridSizeY; row++) {
+    for (let col = 0; col < gridSizeX; col++) {
+      // Calculate cube coordinates
+      const q = col - Math.floor(row / 2);
+      const r = row;
+      const s = -q - r;
+      
+      // Apply triangle check based on orientation
+      let inTriangle = false;
+      
+      switch (orientation) {
+        case 0: // Pointing up
+          inTriangle = r <= r0 && r >= r0 - size && q >= q0 - size && s >= s0 - size;
+          break;
+        case 1: // Pointing up-right
+          inTriangle = q >= q0 && q <= q0 + size && r >= r0 - size && s <= s0;
+          break;
+        case 2: // Pointing down-right
+          inTriangle = s <= s0 && s >= s0 - size && q >= q0 && r <= r0 + size;
+          break;
+        case 3: // Pointing down
+          inTriangle = r >= r0 && r <= r0 + size && q <= q0 + size && s <= s0 + size;
+          break;
+        case 4: // Pointing down-left
+          inTriangle = q <= q0 && q >= q0 - size && r <= r0 + size && s >= s0;
+          break;
+        case 5: // Pointing up-left
+          inTriangle = s >= s0 && s <= s0 + size && q <= q0 && r >= r0 - size;
+          break;
+      }
+      
+      if (inTriangle) {
+        grid[row][col] = color;
+      }
+    }
+  }
+}
