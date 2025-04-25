@@ -1,176 +1,79 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import './HexGrid.css';
-import HexCell from './HexCell';
-import { 
-  CubeCoord, 
-  Point, 
-  gridToCube, 
-  cubeToGrid, 
-  getLocalSVGCoords,
-  pointToCube,
-  roundToHex
-} from '../utils/hexUtils';
+import React from 'react';
+import { getHexPoints } from '../utils/hexUtils';
 
-// Type for a hex cell with position and color
-interface HexCell extends CubeCoord, Point {
-  color: string;
-}
+// Define hex size constants
+const HEX_SIZE = 40; // Reduced base size to accommodate the larger grid
+const HEX_WIDTH = HEX_SIZE * 2; // Width of a hex is 2 * size
+const HEX_HEIGHT = HEX_SIZE * Math.sqrt(3); // Height is size * sqrt(3)
+const HORIZONTAL_SPACING = HEX_WIDTH + HEX_SIZE * (1 - Math.cos(Math.PI / 3)) * 2; // Hexes overlap horizontally by 1/4 width
+const VERTICAL_SPACING = HEX_HEIGHT / 2; // Vertical spacing between rows
 
 interface HexGridProps {
-  grid: string[][];
-  onCellClick: (row: number, col: number) => void;
-  onCellHover: (row: number, col: number) => void;
-  onMouseDown: () => void;
-  onMouseUp: () => void;
+  colors: string[][];
+  onCellClick?: (row: number, col: number) => void;
 }
 
-const HEX_SIZE = 50; // Base size of hexagons
-
 const HexGrid: React.FC<HexGridProps> = ({ 
-  grid, 
+  colors, 
   onCellClick, 
-  onCellHover,
-  onMouseDown,
-  onMouseUp
 }) => {
-  const [hexes, setHexes] = useState<HexCell[]>([]);
-  const [hoveredHex, setHoveredHex] = useState<CubeCoord | null>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  // Calculate grid dimensions
+  const rows = colors.length;
+  const cols = colors[0]?.length || 0;
+  
+  // Calculate SVG viewBox dimensions
+  const svgWidth = cols * HORIZONTAL_SPACING + (HEX_WIDTH / 4);
+  const svgHeight = rows * VERTICAL_SPACING + (HEX_HEIGHT / 2);
 
-  const svgRef = useRef<SVGSVGElement>(null);
-  const svgGroupRef = useRef<SVGGElement>(null);
-
-  // Create the hex grid data using cube coordinates
-  useEffect(() => {
-    const newHexes: HexCell[] = [];
-    
-    // Convert the 2D grid to a list of hex cells with cube coordinates
-    grid.forEach((row, rowIndex) => {
-      row.forEach((color, colIndex) => {
-        // Convert to cube coordinates
-        const { q, r, s } = gridToCube(rowIndex, colIndex);
-        
-        // Calculate pixel position
-        const x = HEX_SIZE * 3/2 * q;
-        const y = HEX_SIZE * Math.sqrt(3) * (r + q/2);
-        
-        newHexes.push({ q, r, s, x, y, color });
-      });
-    });
-    
-    setHexes(newHexes);
-  }, [grid]);
-
-  // SVG coordinate helpers
-  const pixelToSvgLocal = useCallback((px: number, py: number): Point => {
-    if (!svgGroupRef.current) return { x: 0, y: 0 };
-    return getLocalSVGCoords({ x: px, y: py }, svgGroupRef.current);
-  }, []);
-
-  // Find hex from pixel coordinates
-  const pixelToHex = useCallback((px: number, py: number): HexCell | null => {
-    if (!svgRef.current) return null;
-    
-    const { x, y } = pixelToSvgLocal(px, py);    
-    const { q, r, s } = pointToCube(x, y, HEX_SIZE);
-    const { rq, rr, rs } = roundToHex(q, r, s);
-    
-    // Find the hex with these coordinates
-    return hexes.find(h => h.q === rq && h.r === rr && h.s === rs) || null;
-  }, [hexes, pixelToSvgLocal]);
-
-  // Unified pointer event handlers
-  const handlePointerDown = useCallback((event: React.PointerEvent) => {
-    event.preventDefault();
-    setIsDrawing(true);
-    onMouseDown();
-    
-    // Get pointer coordinates and check for hex
-    const hex = pixelToHex(event.clientX, event.clientY);
-    if (hex) {
-      const { row, col } = cubeToGrid(hex.q, hex.r);
+  // Handler functions for interactions
+  const handleCellClick = (row: number, col: number) => {
+    if (onCellClick) {
       onCellClick(row, col);
     }
-  }, [onCellClick, onMouseDown, pixelToHex]);
+  };
   
-  const handlePointerUp = useCallback((event: React.PointerEvent) => {
-    event.preventDefault();
-    setIsDrawing(false);
-    onMouseUp();
-  }, [onMouseUp]);
-  
-  const handlePointerMove = useCallback((event: React.PointerEvent) => {
-    event.preventDefault();
-    const hex = pixelToHex(event.clientX, event.clientY);
-    
-    if (hex) {
-      setHoveredHex(hex);
-      
-      if (isDrawing) {
-        const { row, col } = cubeToGrid(hex.q, hex.r);
-        onCellHover(row, col);
-      }
-    }
-  }, [isDrawing, onCellHover, pixelToHex]);
-  
-  const handlePointerLeave = useCallback((event: React.PointerEvent) => {
-    event.preventDefault();
-    setIsDrawing(false);
-    onMouseUp();
-  }, [onMouseUp]);
-
-  // Handle direct hex cell click
-  const handleHexClick = useCallback((hex: HexCell) => {
-    const { row, col } = cubeToGrid(hex.q, hex.r);
-    onCellClick(row, col);
-  }, [onCellClick]);
-
-  // Calculate SVG dimensions based on grid size
-  const svgWidth = Math.max(grid[0]?.length * 1.5 * HEX_SIZE + HEX_SIZE, 300);
-  const svgHeight = Math.max(grid.length * HEX_SIZE * Math.sqrt(3) + HEX_SIZE, 300);
-
   return (
-    <div className="hex-grid-container">
+    <div className="hex-grid-container" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
       <svg 
-        ref={svgRef}
-        className="hex-grid-svg"
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         width="100%"
         height="100%"
-        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-        style={{ touchAction: 'none' }} /* Disable browser touch actions */
+        className="hex-grid-svg"
+        preserveAspectRatio="xMidYMid meet"
       >
-        <defs>
-          {/* Define the gradient */}
-          <linearGradient id="hex-outline-gradient" x1="50%" y1="50%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#999999" />
-            <stop offset="100%" stopColor="black" />
-          </linearGradient>
-        </defs>
-
-        {/* Center the grid in the SVG */}
         <g
-          ref={svgGroupRef}
+          className="hex-grid"
+          transform={`translate(${HEX_WIDTH / 2}, ${HEX_HEIGHT / 2})`}
         >
-          {hexes.map((hex) => {
-            const isHovered = hoveredHex !== null && hoveredHex.q === hex.q && hoveredHex.r === hex.r;
+          {colors.map((row, rowIndex) => {
+            // Calculate y-coordinate for the entire row
+            const rowY = rowIndex * VERTICAL_SPACING;
             
             return (
-              <HexCell
-                key={`${hex.q},${hex.r},${hex.s}`}
-                q={hex.q}
-                r={hex.r}
-                s={hex.s}
-                x={hex.x}
-                y={hex.y}
-                color={hex.color}
-                size={HEX_SIZE}
-                isHovered={isHovered}
-                onClick={() => handleHexClick(hex)}
-              />
+              <g 
+                key={`row-${rowIndex}`}
+                className="hex-row"
+                // Move both x and y transforms to the row g element
+                transform={`translate(${rowIndex % 2 === 1 ? HORIZONTAL_SPACING / 2 : 0}, ${rowY})`}
+              >
+                {row.map((color, colIndex) => {
+                  // Calculate x position for each hex (y is now handled in the row transform)
+                  const x = colIndex * HORIZONTAL_SPACING;
+                  
+                  return (
+                    <polygon
+                      key={`cell-${rowIndex}-${colIndex}`}
+                      points={getHexPoints(HEX_SIZE)}
+                      transform={`translate(${x}, 0)`}
+                      fill={color}
+                      stroke="#333"
+                      strokeWidth={1}
+                      className="hex-cell"
+                      onClick={() => handleCellClick(rowIndex, colIndex)}
+                    />
+                  );
+                })}
+              </g>
             );
           })}
         </g>

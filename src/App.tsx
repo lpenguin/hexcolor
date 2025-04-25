@@ -10,7 +10,8 @@ enum DrawMode {
 }
 
 function App() {
-  const GRID_SIZE = 10;
+  const GRID_SIZE_X = 10;
+  const GRID_SIZE_Y = 20;
   const DEFAULT_COLOR = '#EEEEEE';
   
   // Define color palette
@@ -33,8 +34,8 @@ function App() {
   // Initialize grid with default color
   const [grid, setGrid] = useState<string[][]>(() => {
     const newGrid = [];
-    for (let i = 0; i < GRID_SIZE; i++) {
-      const row = Array(GRID_SIZE).fill(DEFAULT_COLOR);
+    for (let i = 0; i < GRID_SIZE_Y; i++) {
+      const row = Array(GRID_SIZE_X).fill(DEFAULT_COLOR);
       newGrid.push(row);
     }
     return newGrid;
@@ -46,13 +47,11 @@ function App() {
   // Drawing mode state
   const [currentMode, setCurrentMode] = useState<DrawMode>(DrawMode.PAINT);
   
-  // Add state to track if the mouse is pressed for drawing
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
   
   // Function to handle cell clicks based on current mode
   const handleCellClick = (row: number, col: number) => {
     // Add boundary check to prevent accessing undefined rows/columns
-    if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
+    if (row < 0 || row >= GRID_SIZE_Y || col < 0 || col >= GRID_SIZE_X) {
       console.warn(`Attempted to access invalid cell at row ${row}, col ${col}`);
       return;
     }
@@ -78,23 +77,7 @@ function App() {
         console.warn(`Unknown drawing mode: ${currentMode}`);
     }
   };
-  
-  // Function to handle cell hover while drawing
-  const handleCellHover = (row: number, col: number) => {
-    if (isDrawing && currentMode === DrawMode.PAINT) {
-      handleCellClick(row, col);
-    }
-  };
-  
-  // Function to start drawing when mouse is pressed
-  const handleMouseDown = () => {
-    setIsDrawing(true);
-  };
-  
-  // Function to stop drawing when mouse is released
-  const handleMouseUp = () => {
-    setIsDrawing(false);
-  };
+
   
   // Function to handle flood fill
   const floodFill = (startRow: number, startCol: number, targetColor: string, replacementColor: string) => {
@@ -114,7 +97,7 @@ function App() {
       const [row, col] = queue.shift()!;
       
       // Skip if out of bounds
-      if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
+      if (row < 0 || row >= GRID_SIZE_Y || col < 0 || col >= GRID_SIZE_X) {
         continue;
       }
       
@@ -167,8 +150,8 @@ function App() {
   // Function to handle clear grid
   const handleClearGrid = () => {
     const newGrid = [];
-    for (let i = 0; i < GRID_SIZE; i++) {
-      const row = Array(GRID_SIZE).fill(DEFAULT_COLOR);
+    for (let i = 0; i < GRID_SIZE_Y; i++) {
+      const row = Array(GRID_SIZE_X).fill(DEFAULT_COLOR);
       newGrid.push(row);
     }
     setGrid(newGrid);
@@ -187,8 +170,8 @@ function App() {
         const parsedGrid = JSON.parse(savedGrid);
         if (
           Array.isArray(parsedGrid) && 
-          parsedGrid.length === GRID_SIZE &&
-          parsedGrid.every(row => Array.isArray(row) && row.length === GRID_SIZE)
+          parsedGrid.length === GRID_SIZE_Y &&
+          parsedGrid.every(row => Array.isArray(row) && row.length === GRID_SIZE_X)
         ) {
           setGrid(parsedGrid);
         }
@@ -198,19 +181,6 @@ function App() {
     }
   }, []);
 
-  // Add event listeners for mouse up on window to stop drawing
-  // even when mouse is released outside the grid
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      setIsDrawing(false);
-    };
-    
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-    
-    return () => {
-      window.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-  }, []);
 
   return (
     <div className="app-container">
@@ -233,11 +203,8 @@ function App() {
         </div>
 
         <HexGrid 
-          grid={grid} 
+          colors={grid}
           onCellClick={handleCellClick}
-          onCellHover={handleCellHover}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
         />
       </main>
     </div>

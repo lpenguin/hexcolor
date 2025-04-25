@@ -1,33 +1,27 @@
 import React from 'react';
-import { CubeCoord } from '../utils/hexUtils';
 import { getHexPoints } from '../utils/hexUtils';
 
 // Type for a hex cell with position and color
-export interface HexCellProps extends CubeCoord {
+export interface HexCellProps {
+  col: number;
+  row: number;
   x: number;
   y: number;
   color: string;
   size: number;
   isHovered: boolean;
-  onClick: () => void;
 }
 
-const HexCell: React.FC<HexCellProps> = ({
-  q, r, s, x, y, color, size, isHovered, onClick
-}) => {
+const HexCell: React.FC<HexCellProps> = ({ col, row, x, y, color, size, isHovered }) => {
   return (
     <polygon
-      key={`${q},${r},${s}`}
+      key={`${row},${col}`}
       points={getHexPoints(size)}
-      transform={`translate(${x}, ${y}) ${isHovered ? 'scale(1.05)' : ''}`}
+      transform={`translate(${x}, ${y}) ${isHovered ? 'scale(1.3)' : ''}`}
       fill={color}
-      stroke={isHovered ? "#fff" : "url(#hex-outline-gradient)"}
+      stroke={isHovered ? "#fff" : "#000"}
       strokeWidth={isHovered ? 2 : 1}
-      onClick={onClick}
       className="hex-cell-svg"
-      data-q={q}
-      data-r={r}
-      data-s={s}
     />
   );
 };
