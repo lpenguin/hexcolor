@@ -14,16 +14,16 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
 }) => {
   const colorOptionsRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const [scrollStartPosition, setScrollStartPosition] = useState(0);
   
   // Handle drag start
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!colorOptionsRef.current) return;
     
     setIsDragging(true);
-    setStartX(e.pageX - colorOptionsRef.current.offsetLeft);
-    setScrollLeft(colorOptionsRef.current.scrollLeft);
+    setStartY(e.pageY);
+    setScrollStartPosition(colorOptionsRef.current.scrollTop);
     colorOptionsRef.current.style.cursor = 'grabbing';
   };
   
@@ -50,9 +50,8 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
     if (!isDragging || !colorOptionsRef.current) return;
     
     e.preventDefault();
-    const x = e.pageX - colorOptionsRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll speed multiplier
-    colorOptionsRef.current.scrollLeft = scrollLeft - walk;
+    const yDiff = startY - e.pageY;
+    colorOptionsRef.current.scrollTop = scrollStartPosition + yDiff;
   };
   
   // Handle touch events
@@ -76,20 +75,17 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
       document.addEventListener('touchend', handleTouchEnd);
     } else {
       // This is a touch on the container, for scrolling
-      e.preventDefault();
       setIsDragging(true);
-      setStartX(e.touches[0].pageX - colorOptionsRef.current.offsetLeft);
-      setScrollLeft(colorOptionsRef.current.scrollLeft);
+      setStartY(e.touches[0].pageY);
+      setScrollStartPosition(colorOptionsRef.current.scrollTop);
     }
   };
   
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !colorOptionsRef.current) return;
     
-    e.preventDefault();
-    const x = e.touches[0].pageX - colorOptionsRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    colorOptionsRef.current.scrollLeft = scrollLeft - walk;
+    const yDiff = startY - e.touches[0].pageY;
+    colorOptionsRef.current.scrollTop = scrollStartPosition + yDiff;
   };
   
   const handleTouchEnd = () => {
