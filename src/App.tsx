@@ -214,11 +214,6 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="app-header">
-        <h1>HexColor</h1>
-        <p>A creative and engaging color-based hexagon grid game</p>
-      </header>
-
       <main>
         <div className="control-panel">
           <ColorPalette 
@@ -245,10 +240,6 @@ function App() {
           onMouseUp={handleMouseUp}
         />
       </main>
-
-      <footer className="app-footer">
-        <p>HexColor © 2025 - A fun creative project</p>
-      </footer>
     </div>
   );
 }
