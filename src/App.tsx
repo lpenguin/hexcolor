@@ -46,6 +46,9 @@ function App() {
   // Drawing mode state
   const [currentMode, setCurrentMode] = useState<DrawMode>(DrawMode.PAINT);
   
+  // Add state to track if the mouse is pressed for drawing
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  
   // Function to handle cell clicks based on current mode
   const handleCellClick = (row: number, col: number) => {
     // Add boundary check to prevent accessing undefined rows/columns
@@ -74,6 +77,23 @@ function App() {
       default:
         console.warn(`Unknown drawing mode: ${currentMode}`);
     }
+  };
+  
+  // Function to handle cell hover while drawing
+  const handleCellHover = (row: number, col: number) => {
+    if (isDrawing && currentMode === DrawMode.PAINT) {
+      handleCellClick(row, col);
+    }
+  };
+  
+  // Function to start drawing when mouse is pressed
+  const handleMouseDown = () => {
+    setIsDrawing(true);
+  };
+  
+  // Function to stop drawing when mouse is released
+  const handleMouseUp = () => {
+    setIsDrawing(false);
   };
   
   // Function to handle flood fill
@@ -178,6 +198,20 @@ function App() {
     }
   }, []);
 
+  // Add event listeners for mouse up on window to stop drawing
+  // even when mouse is released outside the grid
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsDrawing(false);
+    };
+    
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, []);
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -206,6 +240,9 @@ function App() {
         <HexGrid 
           grid={grid} 
           onCellClick={handleCellClick}
+          onCellHover={handleCellHover}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
         />
       </main>
 

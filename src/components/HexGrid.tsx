@@ -6,11 +6,35 @@ interface HexCellProps {
   col: number;
   color: string;
   onCellClick: (row: number, col: number) => void;
+  onCellHover: (row: number, col: number) => void;
+  isDrawing: boolean;
 }
 
-const HexCell: React.FC<HexCellProps> = ({ row, col, color, onCellClick }) => {
+const HexCell: React.FC<HexCellProps> = ({ 
+  row, 
+  col, 
+  color, 
+  onCellClick, 
+  onCellHover,
+  isDrawing
+}) => {
+  // Handle all mouse interactions in one place
+  const handleMouseDown = () => {
+    onCellClick(row, col);
+  };
+  
+  const handleMouseEnter = () => {
+    if (isDrawing) {
+      onCellHover(row, col);
+    }
+  };
+
   return (
-    <div className="hex-cell-container" onClick={() => onCellClick(row, col)}>
+    <div 
+      className="hex-cell-container" 
+      onMouseDown={handleMouseDown}
+      onMouseEnter={handleMouseEnter}
+    >
       <svg className="hex-cell" viewBox="0 0 100 115">
         {/* Background fill using the defined hex shape */}
         <use href="#hex-shape" fill={color} />
@@ -25,11 +49,58 @@ const HexCell: React.FC<HexCellProps> = ({ row, col, color, onCellClick }) => {
 interface HexGridProps {
   grid: string[][];
   onCellClick: (row: number, col: number) => void;
+  onCellHover: (row: number, col: number) => void;
+  onMouseDown: () => void;
+  onMouseUp: () => void;
 }
 
-const HexGrid: React.FC<HexGridProps> = ({ grid, onCellClick }) => {
+const HexGrid: React.FC<HexGridProps> = ({ 
+  grid, 
+  onCellClick, 
+  onCellHover,
+  onMouseDown,
+  onMouseUp
+}) => {
+  // State to track if drawing is active
+  const [isDrawing, setIsDrawing] = React.useState(false);
+  
+  // Handle grid-level mouse events
+  const handleMouseDownGrid = () => {
+    setIsDrawing(true);
+    onMouseDown();
+  };
+  
+  const handleMouseUpGrid = () => {
+    setIsDrawing(false);
+    onMouseUp();
+  };
+  
+  // Handle leaving the grid
+  const handleMouseLeave = () => {
+    if (isDrawing) {
+      // Don't stop drawing state internally to keep track if we re-enter
+      // but do tell the parent that mouse is up for its tracking
+      onMouseUp();
+    }
+  };
+  
+  // Handle re-entering the grid with mouse still down
+  const handleMouseEnterGrid = (e: React.MouseEvent) => {
+    if (e.buttons === 1 && !isDrawing) {
+      // If mouse button is pressed when re-entering, restart drawing mode
+      setIsDrawing(true);
+      onMouseDown();
+    }
+  };
+
   return (
-    <div className="hex-grid">
+    <div 
+      className="hex-grid"
+      onMouseDown={handleMouseDownGrid}
+      onMouseUp={handleMouseUpGrid}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnterGrid}
+    >
       {/* Define shared resources once */}
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <defs>
@@ -68,6 +139,8 @@ const HexGrid: React.FC<HexGridProps> = ({ grid, onCellClick }) => {
               col={colIndex}
               color={color}
               onCellClick={onCellClick}
+              onCellHover={onCellHover}
+              isDrawing={isDrawing}
             />
           ))}
         </div>
