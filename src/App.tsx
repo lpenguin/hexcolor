@@ -189,27 +189,25 @@ function App() {
   return (
     <div className="app-container">
       <main>
-        <div className="control-panel">
-          <div className="tools">
-            <button 
-              onClick={handlePaintClick} 
-              className={`tool-button ${currentMode === DrawMode.PAINT ? 'selected' : ''}`}
-            >
-              <img src="./icons/paint-icon.svg" alt="Paint Tool" />
-            </button>
-            <button 
-              onClick={handleFillClick} 
-              className={`tool-button ${currentMode === DrawMode.FILL ? 'selected' : ''}`}
-            >
-              <img src="./icons/fill-icon.svg" alt="Fill Tool" />
-            </button>
-            <button 
-              onClick={handleClearGrid} 
-              className="tool-button clear"
-            >
-              <img src="./icons/clear-icon.svg" alt="Clear Grid" />
-            </button>
-          </div>
+        <div className="tools">
+          <button 
+            onClick={handlePaintClick} 
+            className={`tool-button ${currentMode === DrawMode.PAINT ? 'selected' : ''}`}
+          >
+            <img src="./icons/paint-icon.svg" alt="Paint Tool" />
+          </button>
+          <button 
+            onClick={handleFillClick} 
+            className={`tool-button ${currentMode === DrawMode.FILL ? 'selected' : ''}`}
+          >
+            <img src="./icons/fill-icon.svg" alt="Fill Tool" />
+          </button>
+          <button 
+            onClick={handleClearGrid} 
+            className="tool-button clear"
+          >
+            <img src="./icons/clear-icon.svg" alt="Clear Grid" />
+          </button>
         </div>
 
         <HexGrid 
@@ -217,11 +215,13 @@ function App() {
           onCellClick={handleCellClick}
         />
         
-        <ColorPalette 
-          colors={COLORS} 
-          selectedColor={selectedColor} 
-          onColorSelect={setSelectedColor}
-        />
+        <div className="color-palette-container">
+          <ColorPalette 
+            colors={COLORS} 
+            selectedColor={selectedColor} 
+            onColorSelect={setSelectedColor}
+          />
+        </div>
       </main>
     </div>
   );

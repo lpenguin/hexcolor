@@ -10,97 +10,54 @@ body {
   background-color: #f9f9f9;
   color: #333;
   touch-action: manipulation; /* Improves touch response */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.app-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+html {
+  width: 100%;
+  height: 100%;
 }
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* Header styling */
-.app-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.app-header h1 {
-  font-size: 2.5rem;
-  color: #444;
-  margin-bottom: 0.5rem;
-}
-
-.app-header p {
-  font-size: 1.1rem;
-  color: #666;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-/* Main content layout */
-main {
-  flex: 1;
+.app-container {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
-.card {
-  padding: 2em;
-}
-
-/* Control panel container */
-.control-panel {
+/* Main content layout with grid layout */
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5rem;
+  align-items: stretch;
+  height: 100%;
   width: 100%;
-  max-width: 800px;
-  margin-bottom: 2rem;
 }
 
-/* Tools section */
+/* Tools section - now vertical on the left */
 .tools {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
   background-color: #f0f0f0;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 0.5rem;
+  border-radius: 0;
+  height: 100%;
 }
 
 .tool-button {
@@ -160,37 +117,107 @@ main {
   filter: invert(1); /* For white icon color in clear button */
 }
 
+/* Hex grid container - now in the middle */
+.hex-grid-container {
+  grid-column: 2;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: white;
+}
+
+/* Color palette container - now on the right */
+.color-palette-container {
+  height: 100%;
+  grid-column: 3;
+}
+
+/* Custom color palette styling for vertical layout */
+.color-palette {
+  margin: 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.color-options {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  overflow-y: auto;
+  padding-right: 0.5rem; /* Space for scrollbar */
+  height: 100%;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #888 #f5f5f5; /* For Firefox */
+  cursor: grab; /* Added for draggable scrolling */
+  user-select: none; /* Prevent text selection */
+  -webkit-user-select: none; /* Prevent text selection on WebKit browsers */
+  -ms-user-select: none; /* Prevent text selection on IE */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  scroll-behavior: smooth; /* Smooth scrolling for non-drag scrolling */
+}
+
+/* Responsive styling for mobile devices */
 @media (max-width: 768px) {
   .app-container, #root {
-    padding: 0.75rem;
-    max-width: 100%;
-    width: 100%;
+    padding: 0.5rem;
   }
   
   main {
-    width: 100%;
-    overflow-x: visible;
-  }
-  
-  .app-header h1 {
-    font-size: 2rem;
-  }
-  
-  .app-header p {
-    font-size: 0.9rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: auto;
+    min-height: calc(100vh - 1rem);
   }
   
   .tools {
+    grid-row: 1;
+    grid-column: 1;
     flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    justify-content: center;
+    height: auto;
+    padding: 0.5rem;
+  }
+  
+  .hex-grid-container {
+    grid-row: 2;
+    grid-column: 1;
+    height: 60vh;
+  }
+  
+  .color-palette-container {
+    grid-row: 3;
+    grid-column: 1;
+    height: auto;
+  }
+  
+  .color-palette {
+    width: 100%;
+    height: auto;
+  }
+  
+  .color-options {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: auto;
+    padding-right: 0;
+    padding-bottom: 0.5rem;
   }
   
   .tool-button {
     padding: 0.6rem;
     min-width: 50px;
     min-height: 50px;
-    width: calc(33.333% - 0.5rem); /* Three buttons per row with gap */
   }
   
   .tool-button img {
@@ -201,11 +228,12 @@ main {
 
 @media (max-width: 480px) {
   .app-container, #root {
-    padding: 0.5rem;
+    padding: 0.25rem;
   }
   
-  .app-header h1 {
-    font-size: 1.75rem;
+  .tools {
+    padding: 0.4rem;
+    gap: 0.4rem;
   }
   
   .tool-button {
@@ -226,29 +254,5 @@ main {
   
   html {
     height: -webkit-fill-available; /* For iOS Safari */
-  }
-}
-
-/* iPhone specific adjustments */
-@media screen and (max-width: 428px) and (max-height: 926px) {
-  .app-container {
-    padding: 0.25rem;
-  }
-  
-  main {
-    justify-content: flex-start; /* Align content to top */
-  }
-  
-  .control-panel {
-    margin-bottom: 0.5rem;
-  }
-}
-
-/* Add support for notched phones */
-@supports (padding: max(0px)) {
-  .app-container {
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
