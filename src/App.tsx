@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import HexGrid from './components/HexGrid';
 import ColorPalette from './components/ColorPalette';
+import { generateVoronoiPattern } from './utils/patternUtils';
 import './App.css';
 
 // Define drawing modes
 enum DrawMode {
   PAINT,  // Regular painting
-  FILL    // Flood fill
+  FILL,   // Flood fill
+  VORONOI // Voronoi pattern
 }
 
 function App() {
@@ -148,6 +150,17 @@ function App() {
   const handleFillClick = () => {
     setCurrentMode(DrawMode.FILL);
   };
+
+  // Function to handle voronoi pattern generation
+  const handleVoronoiClick = () => {
+    // First switch to VORONOI mode
+    setCurrentMode(DrawMode.VORONOI);
+    
+    // Generate the Voronoi pattern
+    // Using 12 regions to create a more detailed and colorful pattern
+    const voronoiGrid = generateVoronoiPattern(GRID_SIZE_Y, GRID_SIZE_X, COLORS, 12);
+    setGrid(voronoiGrid);
+  };
   
   // Function to handle clear grid
   const handleClearGrid = () => {
@@ -200,6 +213,12 @@ function App() {
               className={`tool-button ${currentMode === DrawMode.FILL ? 'selected' : ''}`}
             >
               <img src="./icons/fill-icon.svg" alt="Fill Tool" />
+            </button>
+            <button 
+              onClick={handleVoronoiClick} 
+              className={`tool-button ${currentMode === DrawMode.VORONOI ? 'selected' : ''}`}
+            >
+              <img src="./icons/voronoi-icon.svg" alt="Voronoi Pattern" />
             </button>
           </div>
           <button 
