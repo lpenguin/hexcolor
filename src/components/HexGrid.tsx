@@ -25,12 +25,41 @@ const HexGrid: React.FC<HexGridProps> = ({
   const svgWidth = cols * HORIZONTAL_SPACING + (HEX_WIDTH / 4);
   const svgHeight = rows * VERTICAL_SPACING + (HEX_HEIGHT / 2);
 
-  // Handler functions for interactions
-  const handleCellClick = (row: number, col: number) => {
-    if (onCellClick) {
-      onCellClick(row, col);
+  const [isDrawing, setIsDrawing] = React.useState(false);
+
+  const findHexUnderMouse = (event: React.MouseEvent<SVGPolygonElement>): {row: number, col: number} => {
+    const polygon = event.currentTarget;
+  
+    // You can extract data attributes or other information from the element
+    // For example, if you add data attributes for row and column:
+    const row = Number(polygon.getAttribute('data-row'));
+    const col = Number(polygon.getAttribute('data-col'));
+    return { row, col };
+  }
+
+  const handlePointerDown = (event: React.PointerEvent<SVGPolygonElement>) => {
+    setIsDrawing(true);
+    const { row, col } = findHexUnderMouse(event);
+    onCellClick?.(row, col);
+  }
+  const handlePointerUp = (event: React.PointerEvent<SVGPolygonElement>) => {
+    setIsDrawing(false);
+  }
+  const handlePointerMove = (event: React.PointerEvent<SVGPolygonElement>) => {
+    const { row, col } = findHexUnderMouse(event);
+    if (isDrawing) {
+      onCellClick?.(row, col);
     }
-  };
+  }
+  const handlePointerLeave = (event: React.PointerEvent<SVGPolygonElement>) => {
+    const { clientX, clientY } = event;
+    const element = document.elementFromPoint(clientX, clientY);
+    if (element === null || !(element instanceof SVGPolygonElement)) {
+      setIsDrawing(false);
+    }
+  }
+
+
   
   return (
     <div className="hex-grid-container" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
@@ -69,7 +98,12 @@ const HexGrid: React.FC<HexGridProps> = ({
                       stroke="#333"
                       strokeWidth={1}
                       className="hex-cell"
-                      onClick={() => handleCellClick(rowIndex, colIndex)}
+                      onPointerDown={handlePointerDown}
+                      onPointerUp={handlePointerUp}
+                      onPointerMove={handlePointerMove}
+                      onPointerLeave={handlePointerLeave}
+                      data-row={rowIndex}
+                      data-col={colIndex}
                     />
                   );
                 })}

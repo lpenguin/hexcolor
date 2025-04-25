@@ -55,6 +55,11 @@ function App() {
       console.warn(`Attempted to access invalid cell at row ${row}, col ${col}`);
       return;
     }
+
+    const color = grid[row][col];
+    if (color === selectedColor) {
+      return;
+    }
     
     switch (currentMode) {
       case DrawMode.PAINT:
@@ -69,8 +74,6 @@ function App() {
         // Flood fill mode
         const targetColor = grid[row][col];
         floodFill(row, col, targetColor, selectedColor);
-        // Reset to paint mode after filling
-        setCurrentMode(DrawMode.PAINT);
         break;
         
       default:
@@ -140,10 +143,6 @@ function App() {
 
   // Function to handle fill button click
   const handleFillClick = () => {
-    // Ask user to click a cell to flood fill
-    alert('Select a cell to flood fill with the selected color');
-    
-    // Switch to fill mode
     setCurrentMode(DrawMode.FILL);
   };
   
