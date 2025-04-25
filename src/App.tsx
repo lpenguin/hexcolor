@@ -141,6 +141,11 @@ function App() {
     setGrid(newGrid);
   };
 
+  // Function to handle paint button click
+  const handlePaintClick = () => {
+    setCurrentMode(DrawMode.PAINT);
+  };
+
   // Function to handle fill button click
   const handleFillClick = () => {
     setCurrentMode(DrawMode.FILL);
@@ -185,18 +190,24 @@ function App() {
     <div className="app-container">
       <main>
         <div className="control-panel">
-          <ColorPalette 
-            colors={COLORS} 
-            selectedColor={selectedColor} 
-            onColorSelect={setSelectedColor}
-          />
-          
           <div className="tools">
-            <button onClick={handleFillClick} className="tool-button">
-              Flood Fill
+            <button 
+              onClick={handlePaintClick} 
+              className={`tool-button ${currentMode === DrawMode.PAINT ? 'selected' : ''}`}
+            >
+              <img src="./icons/paint-icon.svg" alt="Paint Tool" />
             </button>
-            <button onClick={handleClearGrid} className="tool-button clear">
-              Clear Grid
+            <button 
+              onClick={handleFillClick} 
+              className={`tool-button ${currentMode === DrawMode.FILL ? 'selected' : ''}`}
+            >
+              <img src="./icons/fill-icon.svg" alt="Fill Tool" />
+            </button>
+            <button 
+              onClick={handleClearGrid} 
+              className="tool-button clear"
+            >
+              <img src="./icons/clear-icon.svg" alt="Clear Grid" />
             </button>
           </div>
         </div>
@@ -204,6 +215,12 @@ function App() {
         <HexGrid 
           colors={grid}
           onCellClick={handleCellClick}
+        />
+        
+        <ColorPalette 
+          colors={COLORS} 
+          selectedColor={selectedColor} 
+          onColorSelect={setSelectedColor}
         />
       </main>
     </div>

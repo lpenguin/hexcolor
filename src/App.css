@@ -98,16 +98,24 @@ main {
   justify-content: center;
   gap: 1rem;
   margin-top: 1rem;
+  background-color: #f0f0f0;
+  padding: 12px;
+  border-radius: 12px;
 }
 
 .tool-button {
-  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  min-width: 60px;
+  min-height: 60px;
   font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 0.5rem;
-  background-color: #4D96FF;
-  color: white;
+  border-radius: 8px;
+  background-color: #e0e0e0;
+  color: #333;
   cursor: pointer;
   transition: all 0.2s ease;
   touch-action: manipulation; /* Improves touch response */
@@ -115,32 +123,43 @@ main {
 }
 
 .tool-button:hover {
-  background-color: #3A7BD5;
+  background-color: #d0d0d0;
   transform: translateY(-2px);
+}
+
+.tool-button.selected {
+  background-color: #4D96FF;
+  color: white;
+  box-shadow: 0 2px 8px rgba(77, 150, 255, 0.4);
+}
+
+.tool-button.selected:hover {
+  background-color: #3A7BD5;
 }
 
 .tool-button.clear {
   background-color: #FF6B6B;
+  color: white;
 }
 
 .tool-button.clear:hover {
   background-color: #E45858;
 }
 
-/* Footer styling */
-.app-footer {
-  margin-top: 2rem;
-  text-align: center;
-  padding: 1rem;
-  color: #888;
-  font-size: 0.9rem;
+.tool-button img {
+  width: 36px;
+  height: 36px;
+  filter: invert(0);
 }
 
-.read-the-docs {
-  color: #888;
+.tool-button.selected img {
+  filter: invert(1); /* For white icon color when button is selected */
 }
 
-/* Responsive styling for mobile devices */
+.tool-button.clear img {
+  filter: invert(1); /* For white icon color in clear button */
+}
+
 @media (max-width: 768px) {
   .app-container, #root {
     padding: 0.75rem;
@@ -168,14 +187,18 @@ main {
   }
   
   .tool-button {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-    width: calc(50% - 0.5rem); /* Two buttons per row with gap */
-    margin-bottom: 0.5rem;
+    padding: 0.6rem;
+    min-width: 50px;
+    min-height: 50px;
+    width: calc(33.333% - 0.5rem); /* Three buttons per row with gap */
+  }
+  
+  .tool-button img {
+    width: 32px;
+    height: 32px;
   }
 }
 
-/* Very small screens */
 @media (max-width: 480px) {
   .app-container, #root {
     padding: 0.5rem;
@@ -186,8 +209,14 @@ main {
   }
   
   .tool-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.5rem;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  .tool-button img {
+    width: 28px;
+    height: 28px;
   }
   
   body {
