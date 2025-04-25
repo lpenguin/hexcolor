@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Paint bucket body - filled with red -->
-  <path d="M4,7 L4,20 C4,21.1 5.1,22 6.5,22 L17.5,22 C18.9,22 20,21.1 20,20 L20,7 Z" stroke="#000000" fill="#FF0000"></path>
+  <!-- Paint bucket body - filled with a softer pastel color -->
+  <path d="M4,7 L4,20 C4,21.1 5.1,22 6.5,22 L17.5,22 C18.9,22 20,21.1 20,20 L20,7 Z" stroke="#000000" fill="#FFA69E"></path>
   <!-- Oval top of the bucket -->
-  <ellipse cx="12" cy="7" rx="8" ry="3" stroke="#000000" fill="#FF0000"></ellipse>
+  <ellipse cx="12" cy="7" rx="8" ry="3" stroke="#000000" fill="#FFA69E"></ellipse>
   <!-- Bottom curve (visible from top perspective) -->
   <path d="M5,20 Q12,24 19,20" stroke="#000000" fill="none"></path>
-  <!-- Blue paint drop - without stroke -->
-  <path d="M12,11 C12,11 8.5,14 8,16.5 C7.5,19 9.5,20.5 12,20.5 C14.5,20.5 16.5,18.5 16,16 C15.5,13.5 12,11 12,11 Z" stroke="none" fill="#0066FF"></path>
+  <!-- Paint drop - with a calmer, pastel blue -->
+  <path d="M12,11 C12,11 8.5,14 8,16.5 C7.5,19 9.5,20.5 12,20.5 C14.5,20.5 16.5,18.5 16,16 C15.5,13.5 12,11 12,11 Z" stroke="none" fill="#A9DEF9"></path>
 </svg>

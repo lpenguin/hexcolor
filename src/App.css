@@ -106,15 +106,6 @@ main {
 .tool-button img {
   width: 36px;
   height: 36px;
-  filter: invert(0);
-}
-
-.tool-button.selected img {
-  filter: invert(1); /* For white icon color when button is selected */
-}
-
-.tool-button.clear img {
-  filter: invert(1); /* For white icon color in clear button */
 }
 
 /* Hex grid container - now in the middle */
