@@ -2,11 +2,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2rem auto;
-  padding: 1rem;
-  touch-action: manipulation; /* Improves touch response */
-  max-width: 100%;
-  overflow-x: hidden;
+  margin: 1rem auto;
+  padding: 0.5rem;
+  touch-action: manipulation;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: visible; /* Allow grid to overflow horizontally if needed */
+  -webkit-overflow-scrolling: touch;
+  position: relative; /* For positioning context */
 }
 
 .hex-row {
@@ -43,6 +46,15 @@
 
 /* Media query for mobile devices */
 @media (max-width: 768px) {
+  .hex-grid {
+    padding: 0.25rem;
+    margin: 0.5rem auto;
+    /* Add horizontal centering for small screens */
+    max-width: 95vw;
+    transform: scale(0.95);
+    transform-origin: center top;
+  }
+  
   .hex-cell-container {
     width: 2.8rem; /* Smaller cell size on mobile */
     height: 3.23rem; /* Proportionally smaller */
@@ -64,6 +76,15 @@
 
 /* Very small screens */
 @media (max-width: 480px) {
+  .hex-grid {
+    padding: 0.25rem;
+    margin: 0.25rem auto;
+    transform: scale(0.85);
+    transform-origin: center top;
+    /* Ensure the grid doesn't get cut off */
+    max-width: 90vw;
+  }
+  
   .hex-cell-container {
     width: 2.2rem; /* Even smaller for very small screens */
     height: 2.54rem;
@@ -75,5 +96,27 @@
   
   .hex-row {
     margin-top: -0.53rem;
+  }
+}
+
+/* iPhone SE and other very small devices */
+@media (max-width: 375px) {
+  .hex-grid {
+    transform: scale(0.75); /* More aggressive scaling for very small screens */
+    max-width: 100%; /* Allow full width */
+    margin: 0 auto; /* Center the grid */
+  }
+  
+  .hex-cell-container {
+    width: 2rem;
+    height: 2.31rem;
+  }
+  
+  .hex-row-even {
+    margin-left: 2rem;
+  }
+  
+  .hex-row {
+    margin-top: -0.48rem;
   }
 }
